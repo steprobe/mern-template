@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { getAuth } from 'firebase/auth';
 
 // Use relative path to work with Vite proxy
 const API_URL = '/api';
@@ -16,9 +17,11 @@ class ApiClient {
 
     // Add request interceptor to add auth token
     this.axiosInstance.interceptors.request.use(async (config) => {
-      const isAuth = true;
-      if (isAuth) {
-        const token = 'get-token-from-storage'; // Replace with actual token retrieval logic
+      const auth = getAuth();
+      const user = auth.currentUser;
+
+      if (user) {
+        const token = await user.getIdToken();
         config.headers['x-auth-token'] = token;
       }
 

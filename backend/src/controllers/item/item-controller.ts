@@ -1,6 +1,7 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { z } from 'zod';
 import { Types } from 'mongoose';
+import { RequestUser } from '../../middleware/auth';
 import { ItemService } from '../../services/item/item-service';
 
 // Helper to validate MongoDB ObjectId
@@ -27,19 +28,19 @@ const getItemSchema = z
   })
   .describe('getItem');
 
-const getAllItems = async (_: Request, res: Response) => {
+const getAllItems = async (req: RequestUser, res: Response) => {
   const items = await ItemService.findAll();
   res.status(200).json(items);
 };
 
-const getItem = async (req: Request, res: Response) => {
+const getItem = async (req: RequestUser, res: Response) => {
   const { itemId } = req.params;
   const item = await ItemService.findById(itemId);
 
   return res.status(200).json(item);
 };
 
-const createItem = async (req: Request, res: Response) => {
+const createItem = async (req: RequestUser, res: Response) => {
   const item = await ItemService.create(req.body.name);
   return res.status(201).json(item);
 };

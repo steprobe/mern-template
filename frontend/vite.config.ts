@@ -14,7 +14,7 @@ export default defineConfig(({ mode }) => {
     plugins: [react(), tailwindcss()],
     server: {
       host: true,
-      allowedHosts: ['tactica.local'],
+      allowedHosts: ['mern-template.local'],
       proxy: {
         '/api': {
           target: apiUrl,

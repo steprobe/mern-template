@@ -13,7 +13,8 @@ WORKDIR /app
 COPY . .
 
 WORKDIR /app/frontend
-ARG VITE_API_URL
+ARG VITE_API_URL=http://localhost:3000
+ENV VITE_API_URL=${VITE_API_URL}
 RUN VITE_API_URL=${VITE_API_URL} npm run build
 RUN npm run build
 
