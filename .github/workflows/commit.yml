@@ -1,0 +1,184 @@
+name: Commit
+
+on:
+  push:
+    branches:
+      - '*'
+
+jobs:
+  frontend-install-and-cache:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: .
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Cache node modules
+        uses: actions/cache@v4
+        with:
+          path: frontend/node_modules
+          key: ${{ runner.os }}-frontend-node-modules-${{ hashFiles('frontend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-frontend-node-modules-
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install frontend dependencies
+        run: cd frontend && npm ci --legacy-peer-deps
+
+  backend-install-and-cache:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Cache node modules
+        uses: actions/cache@v4
+        with:
+          path: backend/node_modules
+          key: ${{ runner.os }}-backend-node-modules-${{ hashFiles('backend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-backend-node-modules-
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.9.0
+
+      - name: Install backend dependencies
+        run: cd backend && npm ci --legacy-peer-deps
+
+  frontend-lint:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: ./frontend
+    needs: frontend-install-and-cache
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.9.0
+
+      - name: Restore frontend node modules cache
+        uses: actions/cache@v4
+        with:
+          path: frontend/node_modules
+          key: ${{ runner.os }}-frontend-node-modules-${{ hashFiles('frontend/package-lock.json') }}
+
+      - name: Lint
+        run: npm run lint
+
+  frontend-build:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: ./frontend
+    needs: frontend-install-and-cache
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.9.0
+
+      # TEMP HACK: Clean install to fix npm optional dependencies bug in CI
+      # See: https://github.com/npm/cli/issues/4828
+      - name: Clean install frontend dependencies
+        run: |
+          rm -rf node_modules package-lock.json
+          npm install --legacy-peer-deps
+
+      - name: Build
+        run: VITE_API_URL=http://dummy-to-test-build-ok.com npm run build
+
+  frontend-test:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: ./frontend
+    needs: frontend-install-and-cache
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.9.0
+
+      - name: Restore frontend node modules cache
+        uses: actions/cache@v4
+        with:
+          path: frontend/node_modules
+          key: ${{ runner.os }}-frontend-node-modules-${{ hashFiles('frontend/package-lock.json') }}
+
+      - name: Run tests
+        run: npm run test
+
+  backend-test:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: .
+    needs: backend-install-and-cache
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.9.0
+
+      - name: Restore backend node modules cache
+        uses: actions/cache@v4
+        with:
+          path: backend/node_modules
+          key: ${{ runner.os }}-backend-node-modules-${{ hashFiles('backend/package-lock.json') }}
+
+      - name: Run tests
+        working-directory: ./backend
+        run: npm run test
+
+  backend-lint:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: ./backend
+    needs: backend-install-and-cache
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.9.0
+
+      - name: Restore backend node modules cache
+        uses: actions/cache@v4
+        with:
+          path: backend/node_modules
+          key: ${{ runner.os }}-backend-node-modules-${{ hashFiles('backend/package-lock.json') }}
+
+      - name: Build
+        run: npm run lint
+
