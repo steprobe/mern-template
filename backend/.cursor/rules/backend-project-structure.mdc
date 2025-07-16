@@ -1,0 +1,20 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+The strucutre of the project is
+controllers
+models
+services
+repositories
+
+DTO's are used to communicate between the layers.
+No mongo documents should be used by the service layer
+services should not use other services
+
+When I start with "I think" or "I've been thinking" or similar, challenge the assumptions. lets always explore alternatives and see if we can improve the assumption. Don't assume what I say is good.
+
+When we make changes, consider the changes required in tests.
+
+Run "npm run lint" and "npm run test" to verify changes

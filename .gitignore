@@ -1,0 +1,13 @@
+frontend/node_modules
+frontend/dist/assets
+frontend/dist/index.html
+frontend/dist/vite.svg
+
+node_modules
+backend/dist
+backend/.env
+backend/.idea
+
+.env
+*.log
+frontend/.idea

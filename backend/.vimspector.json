@@ -1,0 +1,73 @@
+{
+  "configurations": {
+    "debug-server": {
+      "adapter": "vscode-node",
+      "breakpoints": {
+        "exception": {
+          "all": "N",
+          "uncaught": "N"
+        }
+      },
+      "configuration": {
+        "request": "launch",
+        "protocol": "auto",
+        "stopOnEntry": false,
+        "console": "integratedTerminal",
+        "program": "${workspaceRoot}/dist/src/server.js",
+        "cwd": "${workspaceRoot}"
+      }
+    },
+    "debug-all-tests": {
+      "adapter": "vscode-node",
+      "configuration": {
+        "request": "launch",
+        "protocol": "auto",
+        "stopOnEntry": false,
+        "cwd": "${workspaceRoot}",
+        "program": "${workspaceRoot}/node_modules/mocha/bin/mocha",
+        "env": {
+          "NODE_ENV": "test"
+        },
+        "args": [
+          "--recursive",
+          "dist/test",
+          "-r",
+          "ts-node/register",
+          "--exit",
+          "--timeout",
+          "5000"
+        ]
+      }
+    },
+    "debug-single-test": {
+      "adapter": "vscode-node",
+      "breakpoints": {
+        "exception": {
+          "all": "N",
+          "uncaught": "N"
+        }
+      },
+      "configuration": {
+        "request": "launch",
+        "protocol": "auto",
+        "stopOnEntry": false,
+        "cwd": "${workspaceRoot}",
+        "program": "${workspaceRoot}/node_modules/mocha/bin/mocha",
+        "env": {
+          "NODE_ENV": "test"
+        },
+        "args": [
+          "--recursive",
+          "dist/test",
+          "-r",
+          "ts-node/register",
+          "--exit",
+          "--timeout",
+          "500000",
+          "--grep",
+          "${TestName}"
+        ]
+      }
+    }
+  }
+}
